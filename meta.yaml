@@ -2,7 +2,7 @@ package:
   name: tigre_python
   version: "0.0.0"
 souce:
-  url: https://github.com/Reuben481/tigre.git
+  git_url: https://github.com/Reuben481/tigre.git
 
 build:
   build:
