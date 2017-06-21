@@ -2,7 +2,6 @@ import  os
 from os.path import join as pjoin
 from setuptools import setup
 from distutils.extension import Extension
-import Cython
 from Cython.Distutils import build_ext
 import subprocess
 import numpy
@@ -100,11 +99,11 @@ def customize_compiler_for_nvcc(self):
     self._compile = _compile
 
 Ax_ext = Extension('_Ax',
-                   sources=(['tigre_python/Source/projection.cpp',
-                             'tigre_python/Source/Siddon_projection.cu', 'tigre_python/Source/Siddon_projection_parallel.cu',
-                             'tigre_python/Source/ray_interpolated_projection.cu', 'tigre_python/Source/ray_interpolated_projection_parallel.cu',
-                             'tigre_python/Source/_types.pxd',
-                             'tigre_python/Source/_Ax.pyx']),
+                   sources=(['tigre/Source/projection.cpp',
+                             'tigre/Source/Siddon_projection.cu', 'tigre/Source/Siddon_projection_parallel.cu',
+                             'tigre/Source/ray_interpolated_projection.cu', 'tigre/Source/ray_interpolated_projection_parallel.cu',
+                             'tigre/Source/_types.pxd',
+                             'tigre/Source/_Ax.pyx']),
                    library_dirs=[CUDA['lib64']],
                    libraries=['cudart'],
                    language='c++',
@@ -118,10 +117,10 @@ Ax_ext = Extension('_Ax',
                    include_dirs=[numpy_include, CUDA['include'], 'Source'])
 
 Atb_ext = Extension('_Atb',
-                    sources=(['tigre_python/Source/voxel_backprojection.cu', 'tigre_python/Source/voxel_backprojection2.cu',
-                              'tigre_python/Source/voxel_backprojection_parallel.cu',
-                              'tigre_python/Source/_types.pxd',
-                              'tigre_python/Source/_Atb.pyx']),
+                    sources=(['tigre/Source/voxel_backprojection.cu', 'tigre/Source/voxel_backprojection2.cu',
+                              'tigre/Source/voxel_backprojection_parallel.cu',
+                              'tigre/Source/_types.pxd',
+                              'tigre/Source/_Atb.pyx']),
                     library_dirs=[CUDA['lib64']],
                     libraries=['cudart'],
                     language='c++',
@@ -141,7 +140,7 @@ class custom_build_ext(build_ext):
         build_ext.build_extensions(self)
 
 
-setup(name='tigre_python',
+setup(name='tigre',
 
       ext_modules=[Ax_ext, Atb_ext],
 
