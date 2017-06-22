@@ -1,6 +1,6 @@
 import  os
 from os.path import join as pjoin
-from setuptools import setup
+from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 import subprocess
@@ -141,7 +141,10 @@ class custom_build_ext(build_ext):
 
 
 setup(name='tigre',
-
+      version = '0.0.0',
+      author = 'Reuben Lindroos',
+      packages = find_packages(),
+      include_package_data=True,
       ext_modules=[Ax_ext, Atb_ext],
 
       # inject our custom trigger
