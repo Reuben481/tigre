@@ -7,7 +7,7 @@ import numpy as np
 import copy
 from _Ax import Ax
 from _Atb import Atb
-from Utilities.filtering import filtering
+from tigre.Utilities.filtering import filtering
 import scipy.io
 
 # TODO: this is quite nasty; it would be nice to reorganise file structure later so top level folder is always in path
@@ -21,6 +21,7 @@ def FDK(proj, geo, angles,filter=None):
     if filter is not None:
         geo.filter=filter
     # Weight
+    proj=proj.transpose()
     proj=proj.transpose(0,2,1)
 
     for ii in range(len(angles)):
@@ -32,8 +33,7 @@ def FDK(proj, geo, angles,filter=None):
         proj[ii] = proj[ii]*w.transpose()
 
 
-    proj_filt=filtering(proj.transpose(0,2,1),geo,angles,parker=False)
-    print(max(proj.ravel()))
+    proj_filt=filtering(proj.transpose(0,2,1),geo,angles,parker=False).transpose()
     # m = {
     #     'py_projfilt': proj_filt,
     #

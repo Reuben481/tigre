@@ -3,15 +3,16 @@ from __future__ import print_function
 import time
 import os
 import sys
-from Utilities.init_multigrid import init_multigrid
+from tigre.Utilities.init_multigrid import init_multigrid
 from scipy.linalg import *
 import numpy as np
 import copy
 from _Ax import Ax
 from _Atb import Atb
-from Utilities.order_subsets import order_subsets
-from Utilities.Measure_Quality import Measure_Quality as MQ
-import scipy.io
+from tigre.Utilities.order_subsets import order_subsets
+from tigre.Utilities.Measure_Quality import Measure_Quality as MQ
+from tigre.Algorithms.FDK import FDK
+from tigre.Utilities.im3Dnorm import im3DNORM
 # TODO: this is quite nasty; it would be nice to reorganise file structure later so top level folder is always in path
 currDir = os.path.dirname(os.path.realpath(__file__))
 rootDir = os.path.abspath(os.path.join(currDir, '..'))
@@ -22,7 +23,7 @@ from scipy.linalg import *
 
 
 def OS_SART(proj, geo, alpha, niter,
-            blocksize=20, lmbda=1, lmbda_red=0.99, OrderStrategy=None, Quameasopts=None, init=None, verbose=True,noneg=True):
+            blocksize=20, lmbda=1, lmbda_red=0.99, OrderStrategy=None, Quameasopts=None, init=None, verbose=True,noneg=True,computel2=False):
     """
     OS_SART_CBCT solves Cone Beam CT image reconstruction using Oriented Subsets
               Simultaneous Algebraic Reconxtruction Techique algorithm
@@ -108,6 +109,7 @@ def OS_SART(proj, geo, alpha, niter,
     #       - fixing the geometry
     #       - making sure there are no infs in W
     geox = copy.deepcopy(geo)
+    geox.sVoxel[0:] = geo.DSD - geo.DSO
     geox.sVoxel[2] = max(geox.sDetector[1], geox.sVoxel[2])
     geox.nVoxel = np.array([2, 2, 2])
     geox.dVoxel = geox.sVoxel / geox.nVoxel
@@ -144,7 +146,7 @@ def OS_SART(proj, geo, alpha, niter,
 
     # Set up init parameters
     lq = []
-
+    l2l =[]
     if init == 'multigrid':
         if verbose == True:
             print('init multigrid in progress...')
@@ -153,7 +155,7 @@ def OS_SART(proj, geo, alpha, niter,
         if verbose == True:
             print('init multigrid complete.')
     if init == 'FDK':
-        raise ValueError('FDK not implemented as of yet (coming soon)!')
+        res=FDK(proj,geo,alpha).transpose()
 
     if type(init) == np.ndarray:
         if (geo.nVoxel == init.shape).all():
@@ -206,24 +208,23 @@ def OS_SART(proj, geo, alpha, niter,
             # res+=1*weighted_backprj
             # res[res < 0] = 0
 
-            if Quameasopts != None:
-                lq.append(MQ(res, res_prev, Quameasopts))
-
+        if Quameasopts != None:
+            lq.append(MQ(res, res_prev, Quameasopts))
             res_prev = res
-            tic = time.clock()
+        if computel2:
+            # compute l2 borm for b-Ax
+            errornow=im3DNORM(proj-Ax(res,geo,alpha,'ray-voxel'),2)
+            l2l.append(errornow)
+
+        tic = time.clock()
     lmbda *= lmbda_red
     # parkerweight(projsirt,TIGRE_parameters,angles,q=1)
-    m = {
-        'py_w': W,
-        'py_v':V,
-        'py_res':res
-
-    }
-    scipy.io.savemat('Tests/FDK_data', m)
+    if computel2:
+        return res.transpose,l2l
     if Quameasopts != None:
         return res.transpose(), lq
     else:
-        return res.transpose()
+        return res
 def adddim(array,dimexp):
     # This function makes sure the dimensions of the arrays are only expanded if
     # blocksize ==1. There may be a nicer way of doing this!

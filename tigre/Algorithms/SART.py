@@ -3,14 +3,14 @@ from __future__ import print_function
 import time
 import os
 import sys
-from Utilities.init_multigrid import init_multigrid
+from tigre.Utilities.init_multigrid import init_multigrid
 from scipy.linalg import *
 import numpy as np
 import copy
 from _Ax import Ax
 from _Atb import Atb
-from Utilities.order_subsets import order_subsets
-from Utilities.Measure_Quality import Measure_Quality as MQ
+from tigre.Utilities.order_subsets import order_subsets
+from tigre.Utilities.Measure_Quality import Measure_Quality as MQ
 
 # TODO: this is quite nasty; it would be nice to reorganise file structure later so top level folder is always in path
 currDir = os.path.dirname(os.path.realpath(__file__))
@@ -107,6 +107,7 @@ def SART(proj, geo, alpha, niter,
     #       - fixing the geometry
     #       - making sure there are no infs in W
     geox = copy.deepcopy(geo)
+    geox.sVoxel[0:]=geo.DSD-geo.DSO
     geox.sVoxel[2] = max(geox.sDetector[1], geox.sVoxel[2])
     geox.nVoxel = np.array([2, 2, 2])
     geox.dVoxel = geox.sVoxel / geox.nVoxel
@@ -199,8 +200,8 @@ def SART(proj, geo, alpha, niter,
             if noneg:
                 res = res.clip(min=0)
 
-            if Quameasopts != None:
-                lq.append(MQ(res, res_prev, Quameasopts))
+        if Quameasopts != None:
+            lq.append(MQ(res, res_prev, Quameasopts))
 
             res_prev = res
         tic = time.clock()
