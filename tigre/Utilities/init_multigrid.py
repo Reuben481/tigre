@@ -5,9 +5,9 @@ import numpy as np
 def init_multigrid(proj, geo, alpha,alg):
     # WARNING: This takes a lot of memory!
     if alg=='SART':
-        from Algorithms.SART import SART as italg
+        from tigre.Algorithms.SART import SART as italg
     if alg=='SIRT':
-        from Algorithms.SIRT import SIRT as italg
+        from tigre.Algorithms.SIRT import SIRT as italg
     finalsize = geo.nVoxel
 
     maxval= max(proj.ravel())

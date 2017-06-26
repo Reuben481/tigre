@@ -1,7 +1,7 @@
 from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy as np
-def plot_projections(projections):
+def plotproj(projections):
     plt.ion()
 
     min_val = np.amin(projections)
@@ -23,10 +23,8 @@ def plot_projections(projections):
         plt.pause(0.001)
 
 def ppslice(projections,slice=None,Dim=2):
-    # plt.ion()
     if slice==None:
         slice=projections.shape[2]/2
-    print(slice)
     min_val = np.amin(projections)
     max_val = np.amax(projections)
     plt.clf()

@@ -85,6 +85,8 @@ def Measure_Quality(res_prev, res, QualMeasOpts):
         back = (2*mean_res*mean_res_p)/((mean_res**2)+(mean_res_p**2))
 
         return sum(front * back)
+    if QualMeasOpts=='SSD':
+        return np.sum((res_prev[:,:,0:res_prev.shape[2]]-res[:,:,0:res.shape[2]])**2)
 
 
 
