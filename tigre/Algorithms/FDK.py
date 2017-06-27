@@ -16,7 +16,7 @@ rootDir = os.path.abspath(os.path.join(currDir, '..'))
 if rootDir not in sys.path:  # add parent dir to paths
     sys.path.append(rootDir)
 
-def FDK(proj, geo, angles,filter=None):
+def FDK(projh, geo, angles,filter=None):
     ('\n'
      'FDK solves Cone Beam CT image reconstruction'
      '\n'
@@ -58,6 +58,7 @@ def FDK(proj, geo, angles,filter=None):
     if filter is not None:
         geo.filter=filter
     # Weight
+    proj=copy.deepcopy(projh)
     proj=proj.transpose()
     proj=proj.transpose(0,2,1)
 
@@ -76,5 +77,6 @@ def FDK(proj, geo, angles,filter=None):
     #
     # }
     # scipy.io.savemat('Tests/Filter_data', m)
-    return Atb(proj_filt,geo,angles,'FDK')
+    res = Atb(proj_filt,geo,angles,'FDK')
+    return res
 
