@@ -101,8 +101,6 @@ def SART(proj, geo, alpha, niter,
     angles, angle_index = order_subsets(alpha, blocksize, OrderStrategy)
     alpha = angles.ravel()
 
-    angle_index = np.arange(len(alpha))
-
     #     Projection weight:
     #       - fixing the geometry
     #       - making sure there are no infs in W

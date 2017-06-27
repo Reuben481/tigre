@@ -24,87 +24,81 @@ from scipy.linalg import *
 
 def OS_SART(proj, geo, alpha, niter,
             blocksize=20, lmbda=1, lmbda_red=0.99, OrderStrategy=None, Quameasopts=None, init=None, verbose=True,noneg=True,computel2=False):
-    """
-    OS_SART_CBCT solves Cone Beam CT image reconstruction using Oriented Subsets
+    ('\n'
+     """SART_CBCT solves Cone Beam CT image reconstruction using Oriented Subsets
               Simultaneous Algebraic Reconxtruction Techique algorithm
 
-    OS_SART_CBCT(PROJ,GEO,ALPHA,NITER) solves the reconstruction problem
-    using the projection data PROJ taken over ALPHA angles, corresponding
-    to the geometry descrived in GEO, using NITER iterations.
+   OS_SART(PROJ,GEO,ALPHA,NITER,BLOCKSIZE=20) solves the reconstruction problem
+   using the projection data PROJ taken over ALPHA angles, corresponding
+   to the geometry descrived in GEO, using NITER iterations."""
+     '\n'
+     'Parameters \n'
+     '-------------------------------------------------------------------\n'
+     '\n'
+     'proj:         Data input in the form of 3d, np.array(dtype=float32)\n'
+     '\n'
+     'geo:          Geometry of detector and image (see examples/Demo code)\n'
+     '\n'
+     'alpha:        1d array of angles corresponding to image data, np.array(dtype=float32)\n'
+     '\n'
+     'niter:        number of iterations of algorithm\n'
+     '\n'
+     'blocksize'
+     'lmbda:        Sets the value of the hyperparameter.\n '
+     '              Default is 1 \n'
+     '\n'
+     'lmbda_red:    Reduction of lambda.Every iteration \n'
+     '              lambda=lambdared*lambda. Default is 0.99\n'
+     '\n'
+     'Init:         Describes diferent initialization techniques.\n'
+     '                "none"     : Initializes the image to zeros (default) \n'
+     '                "FDK"      : intializes image to FDK reconstrucition \n'
+     '                "multigrid": Initializes image by solving the problem in\n'
+     '                             small scale and increasing it when relative\n'
+     '                             convergence is reached.\n'
+     '                "image"    : Initialization using a user specified\n'
+     '                             image. Not recomended unless you really\n'
+     '                             know what you are doing.\n'
+     '\n'
+     'InitImg:      Image for the "image" initialization. (avoid)\n'
+     '\n'
+     'Verbose:      Feedback print statements for algorithm progress \n'
+     '              default=True \n'
+     '\n'
+     'QualMeas:     Asks the algorithm for a set of quality measurement\n'
+     '              parameters. Input should contain a list or tuple of strings of\n'
+     '              quality measurement names. Example: ["CC","RMSE","MSSIM"]\n'
+     '              These will be computed in each iteration.\n'
+     '\n'
+     'OrderStrategy:  Chooses the subset ordering strategy. Options are:\n'
+     '                   "ordered"        : uses them in the input order, but divided\n'
+     '                   "random"         : orders them randomply\n'
+     '                   "angularDistance": chooses the next subset with the\n'
+     '                                      biggest angular distance with the ones used\n'
+     'Examples \n'
+     '---------------------------------------------------------------------------\n'
+     'See Demos/Example code for further instructions.\n'
+     '---------------------------------------------------------------------------'
+     '\n'
+     """This file is part of the TIGRE Toolbox
 
-    OS_SART_CBCT(PROJ,GEO,ALPHA,NITER,OPT,VAL,...) uses options and values for solving. The
-    possible options in OPT are:
+        Copyright (c) 2015, University of Bath and
+                            CERN-European Organization for Nuclear Research
+                            All rights reserved.
 
-    'BlockSize':   Sets the projection block size used simultaneously. If
-                   BlockSize = 1 OS-SART becomes SART and if  BlockSize = length(alpha)
-                   then OS-SART becomes SIRT. Default is 20.
-                   dtype = int
+        License:            Open Source under BSD.
+                            See the full license at
+                            https://github.com/CERN/TIGRE/license.txt
 
-    'lambda':      Sets the value of the hyperparameter. Default is 1
-                   dtype=int or float
-
-    'lambda_red':   Reduction of lambda.Every iteration
-                    lambda=lambdared*lambda. Default is 0.95
-                    dtype= int or float
-
-    'Init':        Describes diferent initialization techniques.
-                   'none'     : Initializes the image to zeros (default)
-                   'FDK'      : intializes image to FDK reconstrucition
-                   'multigrid': Initializes image by solving the problem in
-                                small scale and increasing it when relative
-                                convergence is reached.
-                   'image'    : Initialization using a user specified
-                                image. Not recomended unless you really
-                                know what you are doing.
-                   dtype=float32
-
-    'InitImg'      an image for the 'image' initialization. Avoid.
-                   dtype=np.array([],dtype=float32)
-
-    'Verbose'      True or False. Default is True. Gives information about the
-                   progress of the algorithm.
-    'QualMeas'     Asks the algorithm for a set of quality measurement
-                   parameters. Input should contain a string with optional values 'CC',
-                   'RMSE','MSSIM' or 'UQI'.
-                   dtype = str
-
-                   These will be computed in each iteration.
-  'OrderStrategy'  Chooses the subset ordering strategy. Options are
-                   'ordered' :uses them in the input order, but divided
-                   'random'  : orders them randomply
-                   'angularDistance': chooses the next subset with the
-                                      biggest angular distance with the ones used.
-                    dtype=str
-
-  OUTPUTS:
-
-     [img]                       will output the reconstructed image
-                                 dtype=np.array([],dtype=float32)
-
- --------------------------------------------------------------------------
- --------------------------------------------------------------------------
- This file is part of the TIGRE Toolbox
-
- Copyright (c) 2015, University of Bath and
-                     CERN-European Organization for Nuclear Research
-                     All rights reserved.
-
- License:            Open Source under BSD.
-                     See the full license at
-                     https://github.com/CERN/TIGRE/license.txt
-
- Contact:            tigre.toolbox@gmail.com
- Codes:              https://github.com/CERN/TIGRE/
---------------------------------------------------------------------------
- Coded by:           MATLAB (original code): Ander Biguri
-                     PYTHON : Sam Loescher, Reuben Lindroos"""
-
+        Contact:            tigre.toolbox@gmail.com
+        Codes:              https://github.com/CERN/TIGRE/
+      --------------------------------------------------------------------------
+        Coded by:          MATLAB (original code): Ander Biguri
+                           PYTHON : Reuben Lindroos,Sam Loescher, """)
     if verbose == True:
         print('OS_SART algorithm in progress.')
 
     angleblocks, angle_index = order_subsets(alpha, blocksize, OrderStrategy)
-
-
     #     Projection weight:
     #       - fixing the geometry
     #       - making sure there are no infs in W

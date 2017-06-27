@@ -36,7 +36,7 @@ def order_subsets(angles, blocksize, mode):
                 index_alpha=np.delete(index_alpha,angles_min)
 
             print(len(new_angles),len(new_index))
-            return np.array(new_angles,dtype=np.float32), np.array(new_index,dtype=np.float32)
+            return np.array(new_angles,dtype=np.float32), new_index
 
 
         else:
