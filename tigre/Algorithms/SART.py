@@ -9,6 +9,7 @@ import numpy as np
 import copy
 from _Ax import Ax
 from _Atb import Atb
+from tigre.Utilities.im3Dnorm import im3DNORM
 from tigre.Utilities.order_subsets import order_subsets
 from tigre.Utilities.Measure_Quality import Measure_Quality as MQ
 
@@ -22,7 +23,7 @@ from scipy.linalg import *
 
 
 def SART(proj, geo, alpha, niter,
-         lmbda=1, lmbda_red=0.99, OrderStrategy=None, Quameasopts=None, init=None, verbose=True,noneg=True):
+         lmbda=1, lmbda_red=0.99, OrderStrategy=None, Quameasopts=None, init=None, verbose=True,noneg=True,computel2=False):
 
     ('\n'
      """SART_CBCT solves Cone Beam CT image reconstruction using Oriented Subsets
@@ -165,6 +166,7 @@ def SART(proj, geo, alpha, niter,
 
     # List for storing Quality measure
     lq = []
+    l2l=[]
     # Iterate
 
 
@@ -200,10 +202,16 @@ def SART(proj, geo, alpha, niter,
 
         if Quameasopts != None:
             lq.append(MQ(res, res_prev, Quameasopts))
+        if computel2:
+            # compute l2 borm for b-Ax
+            errornow=im3DNORM(proj-Ax(res,geo,alpha,'ray-voxel'),2)
+            l2l.append(errornow)
 
             res_prev = res
         tic = time.clock()
     lmbda *= lmbda_red
+    if computel2:
+        return res.transpose(),l2l
     if Quameasopts != None:
         return res.transpose(), lq
     else:

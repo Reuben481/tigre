@@ -84,12 +84,12 @@ class plotImg:
 
     def slicer(self):
         # NOTE: Transpose not quite right (still returning image at wrong angle, No labels for axes)
+        min_val = np.amin(self.cube)
+        max_val = np.amax(self.cube)
         if self.dim in [None, 'Z', 'z']:
-            plt.matshow(self.cube[self.slice], cmap=plt.cm.gray)
-            plt.show()
-        if self.dim in ['X', 'x']:
-            plt.matshow((self.cube[:, :, self.slice]), cmap=plt.cm.gray)
-            plt.show()
+            plt.imshow(np.squeeze(self.cube[:,:, self.slice]), cmap=plt.cm.gray, origin='lower', vmin=min_val, vmax=max_val)
         if self.dim in ['Y', 'y']:
-            plt.matshow(self.cube[:, self.slice], cmap=plt.cm.gray)
-            plt.show()
+            plt.imshow(np.squeeze(self.cube[:, self.slice]), cmap=plt.cm.gray,origin='lower', vmin=min_val, vmax=max_val)
+        if self.dim in ['X', 'x']:
+            plt.imshow(np.squeeze(self.cube[self.slice]).transpose(), cmap=plt.cm.gray,origin='lower', vmin=min_val, vmax=max_val)
+        plt.show()

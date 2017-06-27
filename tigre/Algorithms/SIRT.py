@@ -10,6 +10,7 @@ import numpy as np
 import copy
 from _Ax import Ax
 from _Atb import Atb
+from tigre.Utilities.im3Dnorm import im3DNORM
 from tigre.Utilities.order_subsets import order_subsets
 from tigre.Utilities.Measure_Quality import Measure_Quality as MQ
 
@@ -22,7 +23,7 @@ if rootDir not in sys.path:  # add parent dir to paths
 
 
 def SIRT(proj, geo, alpha, niter,
-         lmbda=1, lmbda_red=0.99, OrderStrategy=None, Quameasopts=None, init=None, verbose=True,noneg=True):
+         lmbda=1, lmbda_red=0.99, OrderStrategy=None, Quameasopts=None, init=None, verbose=True,noneg=True,computel2=True):
     ('\n'
      """SART_CBCT solves Cone Beam CT image reconstruction using Oriented Subsets
               Simultaneous Algebraic Reconxtruction Techique algorithm
@@ -142,6 +143,7 @@ def SIRT(proj, geo, alpha, niter,
         V = np.ones([geo.nVoxel[0], geo.nVoxel[1]])*len(alpha)
     # Iterate
     lq = []
+    l2l=[]
 
     if init == 'multigrid':
         if verbose==True:
@@ -188,9 +190,14 @@ def SIRT(proj, geo, alpha, niter,
             res_prev = res
 
         tic=time.clock()
-
+        if computel2:
+        # compute l2 borm for b-Ax
+            errornow=im3DNORM(proj-Ax(res,geo,alpha,'ray-voxel'),2)
+            l2l.append(errornow)
 
     lmbda *= lmbda_red
+    if computel2:
+        return res.transpose(), l2l
     if Quameasopts != None:
         return res.transpose(), lq
     else:
